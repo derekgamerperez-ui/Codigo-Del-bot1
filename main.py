@@ -10,6 +10,26 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 
+@bot.event
+async def on_ready():
+    print(f'We have logged in as {bot.user}')
+
+
+@bot.command()
+async def check(ctx):
+    if ctx.message.attachments:
+        for attachment in ctx.message.attachments:
+            file_name = attachment.filename
+            file_url = attachment.url
+            await attachment.save(f"./{attachment.filename}")
+            await ctx.send(get_class(
+                model_path='./keras_model.h5',
+                labels_path='./labels.txt',
+                image_path=f'./{attachment.filename}'
+            ))
+    else:
+        await ctx.send("You forgot to upload the image :(")
+
 
 @bot.command()
 async def ping(ctx):
@@ -37,14 +57,14 @@ async def moneda(ctx):
 @bot.command()
 async def ayuda_bot(ctx):
     mensaje = """
-🤖 **COMANDOS DEL BOT**
+🤖 COMANDOS DEL BOT
 
-🔍 `!check` — analiza una imagen con tu modelo de IA.
-🏓 `!ping` — comprueba la latencia.
-👋 `!hola` — saluda al usuario.
-🎲 `!dado` — lanza un dado.
-🪙 `!moneda` — lanza una moneda.
-ℹ️ `!info` — muestra información del bot.
+🔍 !check — clasifica una imagen con IA (en desarrollo).
+🏓 !ping — comprueba la latencia.
+👋 !hola — saluda al usuario.
+🎲 !dado — lanza un dado.
+🪙 !moneda — lanza una moneda.
+ℹ️ !info — muestra información del bot.
 """
     await ctx.send(mensaje)
 
@@ -55,5 +75,6 @@ async def info(ctx):
         f"🤖 **{bot.user.name}**\n"
         f"🆔 ID: `{bot.user.id}`\n"
         f"📡 Latencia: `{round(bot.latency * 1000)} ms`\n"
-        f"🧠 Tengo un sistema de clasificación de imágenes con IA."
+        f"🧠 Bot con sistema de clasificación de imágenes mediante IA.\n"
+        f"🚧 El comando !check está en desarrollo."
     )
